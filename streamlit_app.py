@@ -363,16 +363,6 @@ def action_panel() -> None:
         if st.button("🧪 Regular protectant", use_container_width=True, disabled=disabled):
             take_action("regular")
 
-    hcol1, hcol2 = st.columns([1, 3])
-    with hcol1:
-        if st.button("🌾 Harvest now", use_container_width=True, disabled=disabled):
-            finish_game("You harvested early.")
-    with hcol2:
-        st.caption(
-            "Early harvest ends the game, but immature wheat receives a maturity discount. "
-            "The highest scores usually come from protecting the crop through the full season."
-        )
-
 
 def sidebar_rules() -> None:
     with st.sidebar:
@@ -406,16 +396,6 @@ def render_dashboard() -> None:
         unsafe_allow_html=True,
     )
 
-    st.markdown(
-        """
-        <div class='brand-card'>
-            <b>Company premise:</b> Harvest Shield creates engineered bacteria that incorporate into a crop microbiome and produce protective peptides and dsRNA against insect pressure.
-            In this game, the Harvest Shield action clears pest and weed pressure without reducing harvest potential.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     if st.session_state.game_over:
         final_score = projected_harvest_score()
         if final_score >= 85:
@@ -446,17 +426,29 @@ def render_dashboard() -> None:
         st.subheader("Field status")
         card_cols = st.columns(2)
         with card_cols[0]:
-            st.markdown("<div class='status-card'>", unsafe_allow_html=True)
-            st.write(f"**Soil moisture:** {st.session_state.moisture:.0f}%")
-            st.progress(int(st.session_state.moisture))
-            st.write(f"Status: **{water_status()}**")
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class='status-card'>
+                    <div><strong>Soil moisture:</strong> {st.session_state.moisture:.0f}%</div>
+                    <div style='margin: 0.85rem 0; height: 0.9rem; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 0.5rem; overflow: hidden; background: #f8fafc;'>
+                        <div style='height: 100%; width: {int(st.session_state.moisture)}%; background: #10b981;'></div>
+                    </div>
+                    <div><strong>Status:</strong> {water_status()}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
         with card_cols[1]:
-            st.markdown("<div class='status-card'>", unsafe_allow_html=True)
-            st.write(f"**Pressure:** {pressure_label()}")
-            st.write(f"**Harvest Shield uses:** {st.session_state.harvest_shield_uses}")
-            st.write(f"**Regular protectant penalty:** -{st.session_state.regular_penalty:.0f}")
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class='status-card'>
+                    <div><strong>Pressure:</strong> {pressure_label()}</div>
+                    <div><strong>Harvest Shield uses:</strong> {st.session_state.harvest_shield_uses}</div>
+                    <div><strong>Regular protectant penalty:</strong> -{st.session_state.regular_penalty:.0f}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
         st.markdown(f"<div class='log-box'><b>Scout report:</b> {crop_status()}</div>", unsafe_allow_html=True)
         st.markdown(f"<div class='log-box'><b>Latest event:</b> {st.session_state.last_message}</div>", unsafe_allow_html=True)
